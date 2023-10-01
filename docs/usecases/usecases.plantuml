@@ -1,0 +1,95 @@
+@startuml use-cases
+
+left to right direction
+
+actor Recruiter
+actor Candidate
+actor Admin
+
+rectangle Application {
+  (Contact) as contact
+  (View applications) as viewApplications
+  (Accept application) as accept
+  (Refuse application) as refuse
+  (Confirm acceptance) as confirmAcceptance
+  (Refuse acceptance) as refuseAcceptance
+  (Notify candidate) as notifyCandidate
+  (Notify recruiter) as notifyRecruiter
+  accept .u.> notifyCandidate: <<include>>
+  refuse .u.> notifyCandidate: <<include>>
+  confirmAcceptance ..> notifyRecruiter: <<include>>
+  refuseAcceptance  ..> notifyRecruiter: <<include>>
+  contact .[hidden]d. viewApplications
+}
+
+Recruiter -u-> contact
+Recruiter -u-> accept
+Recruiter -u-> refuse
+Recruiter -u-> viewApplications
+Candidate --> confirmAcceptance
+Candidate --> refuseAcceptance
+
+
+rectangle JobOffer {
+  (Create job offer) as createJob
+  (Update job offer) as updateJob
+  (Read job offer) as readJob
+  (Delete job offer) as deleteJob
+  (Search job offer) as searchJob
+  (Apply to job offer) as applyJob
+  applyJob ..> notifyRecruiter: <<extends>>
+}
+
+Recruiter -u-> createJob
+Recruiter -u-> updateJob
+Recruiter -u-> readJob
+Recruiter -u-> deleteJob
+Candidate --> searchJob
+Candidate --> readJob
+Candidate --> applyJob
+
+rectangle Profile {
+  usecase Profile_CRU as "
+  Register
+  ..
+  Update profile
+  ..
+  View profile
+  "
+  (Ask for deletion) as askDeletion
+  (Notify admin) as notifyAdmin
+  (Delete profile) as deleteProfile
+  askDeletion ..> notifyAdmin: <<include>>
+}
+
+Candidate --> Profile_CRU
+Recruiter -u-> Profile_CRU
+Candidate --> askDeletion
+Recruiter --> askDeletion
+Admin --> deleteProfile
+
+rectangle Review {
+  usecase Review_CRUD as "
+  Add a review
+  ..
+  Update a review
+  ..
+  View a review
+  ..
+  Delete a review
+  "
+}
+
+Candidate -u-> Review_CRUD
+
+rectangle Subscription {
+  (Select) as selectSubscription
+  (Renew) as renewSubscription
+  (Pay subscription) as paySubscription
+  selectSubscription ..> paySubscription: <<include>>
+  renewSubscription  ..> paySubscription: <<include>>
+}
+Recruiter --> selectSubscription
+Recruiter --> renewSubscription
+
+@enduml

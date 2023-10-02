@@ -80,7 +80,7 @@ rectangle Review {
   "
 }
 
-Candidate -u-> Review_CRUD
+Recruiter -u-> Review_CRUD
 
 rectangle Subscription {
   (Select) as selectSubscription

@@ -16,33 +16,13 @@ CREATE TABLE "citizenship" (
   "name" varchar(8)
 );
 
-CREATE TABLE "country" (
-  "id" serial PRIMARY KEY,
-  "name" varchar(50)
-);
-
-CREATE TABLE "city" (
-  "id" serial PRIMARY KEY,
-  "name" varchar(50),
-  "country" integer
-);
-
-CREATE TABLE "address" (
-  "id" uuid PRIMARY KEY,
-  "num" integer,
-  "steet" text NOT NULL,
-  "complement" text,
-  "zipCode" smallint,
-  "city" integer
-);
-
 CREATE TABLE "reference" (
   "id" uuid PRIMARY KEY,
   "title" varchar(100) NOT NULL,
   "phone" varchar,
   "email" varchar NOT NULL,
   "candidate" uuid,
-  "comapany" integer NOT NULL
+  "company" integer NOT NULL
 );
 
 CREATE TABLE "recruiter" (
@@ -54,7 +34,7 @@ CREATE TABLE "recruiter" (
   "password" varchar
 );
 
-CREATE TABLE "availabitiy" (
+CREATE TABLE "availability" (
   "id" serial PRIMARY KEY,
   "job" integer NOT NULL,
   "start" date NOT NULL,
@@ -67,13 +47,13 @@ CREATE TABLE "candidate" (
   "last_name" varchar NOT NULL,
   "gender" integer NOT NULL,
   "citizenship" integer NOT NULL,
-  "address" uuid NOT NULL,
   "phone" varchar,
   "email" varchar UNIQUE NOT NULL,
   "photo" bytea,
   "cv" text,
   "bio" text,
-  "password" varchar NOT NULL
+  "password" varchar NOT NULL,
+  "address" uuid NOT NULL
 );
 
 CREATE TABLE "company" (
@@ -91,8 +71,14 @@ CREATE TABLE "tier" (
 );
 
 CREATE TABLE "feature" (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar
+);
+
+CREATE TABLE "tier_feature" (
+  "tier" integer,
+  "feature" integer,
+  "value" string
 );
 
 CREATE TABLE "job_category" (
@@ -136,7 +122,7 @@ CREATE TABLE "advantage" (
 );
 
 CREATE TABLE "company_recruiter" (
-  "id" uuit PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "company" integer,
   "recruiter" uuid,
   "proof" bytea
@@ -157,23 +143,19 @@ CREATE UNIQUE INDEX ON "company_recruiter" ("company", "recruiter");
 
 COMMENT ON COLUMN "candidate"."cv" IS 'url to the CV';
 
-ALTER TABLE "city" ADD FOREIGN KEY ("country") REFERENCES "country" ("id");
-
-ALTER TABLE "address" ADD FOREIGN KEY ("city") REFERENCES "city" ("id");
-
 ALTER TABLE "reference" ADD FOREIGN KEY ("candidate") REFERENCES "candidate" ("id");
 
-ALTER TABLE "reference" ADD FOREIGN KEY ("comapany") REFERENCES "company" ("siret");
+ALTER TABLE "reference" ADD FOREIGN KEY ("company") REFERENCES "company" ("siret");
 
-ALTER TABLE "availabitiy" ADD FOREIGN KEY ("job") REFERENCES "job" ("id");
+ALTER TABLE "availability" ADD FOREIGN KEY ("job") REFERENCES "job" ("id");
 
 ALTER TABLE "candidate" ADD FOREIGN KEY ("gender") REFERENCES "gender" ("id");
 
 ALTER TABLE "candidate" ADD FOREIGN KEY ("citizenship") REFERENCES "citizenship" ("id");
 
-ALTER TABLE "candidate" ADD FOREIGN KEY ("address") REFERENCES "address" ("id");
+ALTER TABLE "tier_feature" ADD FOREIGN KEY ("tier") REFERENCES "tier" ("id");
 
-ALTER TABLE "company" ADD FOREIGN KEY ("address") REFERENCES "address" ("id");
+ALTER TABLE "tier_feature" ADD FOREIGN KEY ("feature") REFERENCES "feature" ("id");
 
 ALTER TABLE "job" ADD FOREIGN KEY ("category") REFERENCES "job_category" ("id");
 
@@ -195,16 +177,13 @@ ALTER TABLE "subscription" ADD FOREIGN KEY ("level") REFERENCES "tier" ("id");
 
 ALTER TABLE "subscription" ADD FOREIGN KEY ("recruiter") REFERENCES "recruiter" ("id");
 
-CREATE TABLE "availabitiy_city" (
-  "availabitiy_id" serial,
+CREATE TABLE "availability_city" (
+  "availability_id" serial,
   "city_id" serial,
-  PRIMARY KEY ("availabitiy_id", "city_id")
+  PRIMARY KEY ("availability_id", "city_id")
 );
 
-ALTER TABLE "availabitiy_city" ADD FOREIGN KEY ("availabitiy_id") REFERENCES "availabitiy" ("id");
-
-ALTER TABLE "availabitiy_city" ADD FOREIGN KEY ("city_id") REFERENCES "city" ("id");
-
+ALTER TABLE "availability_city" ADD FOREIGN KEY ("availability_id") REFERENCES "availability" ("id");
 
 CREATE TABLE "job_offer_advantage" (
   "job_offer_id" uuid,
@@ -217,24 +196,13 @@ ALTER TABLE "job_offer_advantage" ADD FOREIGN KEY ("job_offer_id") REFERENCES "j
 ALTER TABLE "job_offer_advantage" ADD FOREIGN KEY ("advantage_id") REFERENCES "advantage" ("id");
 
 
-CREATE TABLE "tier_feature" (
-  "tier_id" serial,
-  "feature_id" integer,
-  PRIMARY KEY ("tier_id", "feature_id")
-);
-
-ALTER TABLE "tier_feature" ADD FOREIGN KEY ("tier_id") REFERENCES "tier" ("id");
-
-ALTER TABLE "tier_feature" ADD FOREIGN KEY ("feature_id") REFERENCES "feature" ("id");
-
-
-CREATE TABLE "candidate_availabitiy" (
+CREATE TABLE "candidate_availability" (
   "candidate_id" uuid,
-  "availabitiy_id" serial,
-  PRIMARY KEY ("candidate_id", "availabitiy_id")
+  "availability_id" serial,
+  PRIMARY KEY ("candidate_id", "availability_id")
 );
 
-ALTER TABLE "candidate_availabitiy" ADD FOREIGN KEY ("candidate_id") REFERENCES "candidate" ("id");
+ALTER TABLE "candidate_availability" ADD FOREIGN KEY ("candidate_id") REFERENCES "candidate" ("id");
 
-ALTER TABLE "candidate_availabitiy" ADD FOREIGN KEY ("availabitiy_id") REFERENCES "availabitiy" ("id");
+ALTER TABLE "candidate_availability" ADD FOREIGN KEY ("availability_id") REFERENCES "availability" ("id");
 

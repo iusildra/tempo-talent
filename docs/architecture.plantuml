@@ -1,0 +1,32 @@
+@startuml
+cloud "API Gateway" as gateway
+component Front
+package Back {
+  node RecruiterService {
+    database "Database" as RecruiterDatabase
+    component Recruiter
+    component Company
+    component Subscription
+    component Address
+  }
+  node JobOfferService {
+    database "Database" as JobOfferDatabase
+    component JobOffer
+    component Application
+    component Review
+  }
+  node CandidateService {
+    database "Database" as CandidateDatabase
+    component Candidate
+    component Reference
+  }
+  JobOfferService -[hidden]u- RecruiterService
+}
+
+Front   -> gateway
+gateway -> Back
+
+cloud ExternalCandidateAPI
+
+CandidateService -l-> ExternalCandidateAPI: > calls
+@enduml

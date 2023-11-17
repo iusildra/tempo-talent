@@ -16,24 +16,6 @@ CREATE TABLE "citizenship" (
   "name" varchar(8)
 );
 
-CREATE TABLE "reference" (
-  "id" uuid PRIMARY KEY,
-  "title" varchar(100) NOT NULL,
-  "phone" varchar,
-  "email" varchar NOT NULL,
-  "candidate" uuid,
-  "company" integer NOT NULL
-);
-
-CREATE TABLE "recruiter" (
-  "id" uuid PRIMARY KEY,
-  "first_name" varchar NOT NULL,
-  "last_name" varchar NOT NULL,
-  "phone" varchar,
-  "email" varchar UNIQUE NOT NULL,
-  "password" varchar
-);
-
 CREATE TABLE "availability" (
   "id" serial PRIMARY KEY,
   "job" integer NOT NULL,
@@ -56,29 +38,13 @@ CREATE TABLE "candidate" (
   "address" uuid NOT NULL
 );
 
-CREATE TABLE "company" (
-  "siret" integer PRIMARY KEY,
-  "name" varchar,
-  "address" uuid
-);
-
-CREATE TABLE "tier" (
-  "id" serial PRIMARY KEY,
-  "level" varchar,
-  "price_biyearly" integer,
-  "price_yearly" integer,
-  "price_monthly" integer
-);
-
-CREATE TABLE "feature" (
-  "id" serial PRIMARY KEY,
-  "name" varchar
-);
-
-CREATE TABLE "tier_feature" (
-  "tier" integer,
-  "feature" integer,
-  "value" string
+CREATE TABLE "reference" (
+  "id" uuid PRIMARY KEY,
+  "title" varchar(100) NOT NULL,
+  "phone" varchar,
+  "email" varchar NOT NULL,
+  "candidate" uuid,
+  "company" integer NOT NULL REFERENCES "company" ("siret")
 );
 
 CREATE TABLE "job_category" (
@@ -121,31 +87,13 @@ CREATE TABLE "advantage" (
   "name" varchar
 );
 
-CREATE TABLE "company_recruiter" (
-  "id" uuid PRIMARY KEY,
-  "company" integer,
-  "recruiter" uuid,
-  "proof" bytea
-);
-
-CREATE TABLE "subscription" (
-  "level" integer,
-  "recruiter" uuid UNIQUE,
-  "begin" date,
-  PRIMARY KEY ("recruiter", "level")
-);
-
 CREATE UNIQUE INDEX ON "job" ("title", "category");
 
 CREATE UNIQUE INDEX ON "application" ("candidate", "job_offer");
 
-CREATE UNIQUE INDEX ON "company_recruiter" ("company", "recruiter");
-
 COMMENT ON COLUMN "candidate"."cv" IS 'url to the CV';
 
 ALTER TABLE "reference" ADD FOREIGN KEY ("candidate") REFERENCES "candidate" ("id");
-
-ALTER TABLE "reference" ADD FOREIGN KEY ("company") REFERENCES "company" ("siret");
 
 ALTER TABLE "availability" ADD FOREIGN KEY ("job") REFERENCES "job" ("id");
 
@@ -153,9 +101,6 @@ ALTER TABLE "candidate" ADD FOREIGN KEY ("gender") REFERENCES "gender" ("id");
 
 ALTER TABLE "candidate" ADD FOREIGN KEY ("citizenship") REFERENCES "citizenship" ("id");
 
-ALTER TABLE "tier_feature" ADD FOREIGN KEY ("tier") REFERENCES "tier" ("id");
-
-ALTER TABLE "tier_feature" ADD FOREIGN KEY ("feature") REFERENCES "feature" ("id");
 
 ALTER TABLE "job" ADD FOREIGN KEY ("category") REFERENCES "job_category" ("id");
 
@@ -168,14 +113,6 @@ ALTER TABLE "application" ADD FOREIGN KEY ("candidate") REFERENCES "candidate" (
 ALTER TABLE "application" ADD FOREIGN KEY ("job_offer") REFERENCES "job_offer" ("id");
 
 ALTER TABLE "application" ADD FOREIGN KEY ("review") REFERENCES "review" ("id");
-
-ALTER TABLE "company_recruiter" ADD FOREIGN KEY ("company") REFERENCES "company" ("siret");
-
-ALTER TABLE "company_recruiter" ADD FOREIGN KEY ("recruiter") REFERENCES "recruiter" ("id");
-
-ALTER TABLE "subscription" ADD FOREIGN KEY ("level") REFERENCES "tier" ("id");
-
-ALTER TABLE "subscription" ADD FOREIGN KEY ("recruiter") REFERENCES "recruiter" ("id");
 
 CREATE TABLE "availability_city" (
   "availability_id" serial,

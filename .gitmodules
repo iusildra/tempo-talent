@@ -1,6 +1,8 @@
 [submodule "modules/tempo-talent-front"]
 	path = modules/tempo-talent-front
 	url = git@github.com:iusildra/tempo-talent-front.git
+	branch = master
 [submodule "modules/tempo-talent-api"]
 	path = modules/tempo-talent-api
 	url = git@github.com:iusildra/tempo-talent-api.git
+	branch = master

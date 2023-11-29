@@ -1,32 +1,46 @@
-@startuml
+@startuml architecture
 cloud "API Gateway" as gateway
 component Front
 package Back {
-  node RecruiterService {
-    database "Database" as RecruiterDatabase
-    component Recruiter
-    component Company
-    component Subscription
-    component Address
-  }
   node JobOfferService {
     database "Database" as JobOfferDatabase
-    component JobOffer
-    component Application
-    component Review
+    component Config as JobOfferConfig
+    component Controllers as JobOfferControllers
+    component Exceptions as JobOfferExceptions
+    component Models as JobOfferModels
+    component Services as JobOfferServices
+    component Repositories as JobOfferRepositories
   }
+  node RecruiterService {
+    database "Database" as RecruiterDatabase
+    component Address
+    component City
+    component Company
+    component CompanyRecruiter
+    component Config
+    component Country
+    component Exceptions
+    component Feature
+    component Recruiter
+    component Subscription
+    component Tier
+    component TierFeature
+  }
+}
+
+cloud ExternalCandidateAPI {
   node CandidateService {
     database "Database" as CandidateDatabase
     component Candidate
+    component Citizenship
+    component Gender
     component Reference
   }
-  JobOfferService -[hidden]u- RecruiterService
 }
 
 Front   -> gateway
-gateway -> Back
+gateway <-> Back
 
-cloud ExternalCandidateAPI
 
-CandidateService -l-> ExternalCandidateAPI: > calls
+gateway --> ExternalCandidateAPI: > calls
 @enduml
